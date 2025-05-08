@@ -60,4 +60,25 @@ public class RoomManagement {
         }
         return false;
     }
+    
+    //添加房间（类型还是数量）
+    public void addRoom (RoomType type, double price, int capacity) {
+        for (int i = 0; i < capacity; i++) {
+            rooms.add(new Room(type, price, 1)); //添加对应房间类型和价格数目
+        }
+        System.out.println("成功添加 " + capacity +" 间 " + type + " 房间");
+    }
+
+    //删除房间
+    public void removeRoom (RoomType type,int capacity) {
+        List<Room> availableRooms = findAvailableRooms(type);
+        if (availableRooms.size() < capacity) {
+            System.out.println("可用房间不足，仅能删除 " + availableRooms.size() + " 间");
+            capacity = availableRooms.size();
+        }
+        for (int i = 0; i < capacity; i++) {
+            rooms.remove(availableRooms.get(i));
+        }
+        System.out.println("成功删除 " + capacity + " 间 " + type + " 类型房间");
+    }
 }

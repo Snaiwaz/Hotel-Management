@@ -1,6 +1,8 @@
 package User;
 
 import Room.RoomManagement;
+import Room.RoomType;
+
 import java.util.List;
 import java.util.Scanner;
 
@@ -19,14 +21,15 @@ public class Admin extends User {
 
     //管理员界面
     public void adminMenu(String userId) {
-        System.out.println("=====管理员界面=====");
-        System.out.println("欢迎管理员：" + userId);
-        System.out.println("1.查看顾客入住信息");
-        System.out.println("2.显示所有房间信息");
-        System.out.println("3.添加房间");
-        System.out.println("4.删除房间");
-        System.out.println("0.退出登录");
+        
         while (true) {
+            System.out.println("=====管理员界面=====");
+            System.out.println("欢迎管理员：" + userId);
+            System.out.println("1.查看顾客入住信息");
+            System.out.println("2.显示所有房间信息");
+            System.out.println("3.添加房间");
+            System.out.println("4.删除房间");
+            System.out.println("0.退出登录");
             System.out.println("================");
             System.out.print("请输入选项 >");
 
@@ -40,10 +43,28 @@ public class Admin extends User {
                     rm.displayRooms();
                     break;
                 case 3:
-                    System.out.println("添加房间功能待实现。。。");
+                    String input;
+                    double price;
+                    int capacity;
+                    System.out.println("请输入要添加的房间类型(SINGLE,DOUBLE)：");
+                    input = sc.next();
+                    RoomType type1 = RoomType.valueOf(input);
+                    
+                    System.out.println("请输入对应房间价格：");
+                    price = sc.nextDouble();
+                    
+                    System.out.println("请输入对应房间数量：");
+                    capacity = sc.nextInt();
+                    rm.addRoom(type1,price,capacity);
                     break;
                 case 4:
-                    System.out.println("删除房间功能待实现。。。");
+                    System.out.println("请输入删除的房间类型(SINGLE,DOUBLE)：");
+                    input = sc.next();
+                    RoomType type2 = RoomType.valueOf(input);
+                    
+                    System.out.println("请输入删除的对应房间数量：");
+                    capacity = sc.nextInt();
+                    rm.removeRoom(type2,capacity);
                     break;
                 case 0:
                     System.out.println("返回主界面...");
@@ -63,18 +84,9 @@ public class Admin extends User {
         }
 
         for (Customer customer : customers) {
-            System.out.println("顾客：" + getUserId() + "\t是否会员：" + customer.getMember() + "\t房间类型：");
+            System.out.println("顾客：" + customer.getUserId() + "\t是否会员：" + customer.getMember() + "\t房间类型："  );
         }
 
     }
-
-    //添加房间（类型还是数量）
-    public void addRoom () {
     
-    }
-
-//    //删除房间
-//    public void removeRoom () {
-//
-//    }
 }
