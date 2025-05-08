@@ -10,18 +10,15 @@ public class RoomManagement {
     //构造函数
     public RoomManagement() {
         rooms = new ArrayList<>();
-        initializeRooms();
+        initializeRooms(RoomType.SINGLE, 100.0, 5);
+        initializeRooms(RoomType.DOUBLE, 150.0, 8);
     }
 
     //初始化房间
-    private void initializeRooms() {
-        // 初始化单人间
-        for (int i = 0; i < 25; i++) {
-            rooms.add(new Room(RoomType.SINGLE, 100.0));
-        }
-        // 初始化双人间
-        for (int i = 0; i < 50; i++) {
-            rooms.add(new Room(RoomType.DOUBLE, 200.0));
+    public void initializeRooms(RoomType type, double price, int capacity) {
+        // 初始化房间类型
+        for (int i = 0; i < capacity; i++) {
+            rooms.add(new Room(type, price,1));
         }
     }
 
@@ -42,22 +39,25 @@ public class RoomManagement {
         }
         return availableRooms;
     }
-
-    //开房(查看类型房间是否还有余量)
-    public boolean bookRoom(RoomType type) {
+    
+    //再对可用房间类型某个房间进行状态修改
+    public Room bookRoom(RoomType type) {
         List<Room> availableRooms = findAvailableRooms(type);
-        if (availableRooms.isEmpty()) {
-            System.out.println("没有可订的" + type + "房间");
-            return false;
-        } else {
-            Room room = availableRooms.get(0);
+        //判断可用房间是否为空
+        if (!availableRooms.isEmpty()) {
+            Room room = availableRooms.get(0); //取第一个可用房间并且修改状态
             room.updateAvailable(false);
-            System.out.println("房间预订成功！");
+            return room;
+        }
+        return null;
+    }
+    
+    //退房
+    public boolean checkOutRoom(Room room) {
+        if (rooms.contains(room) && !room.isAvailable()) {
+            room.updateAvailable(true);
             return true;
         }
+        return false;
     }
-
-    //退房
-    //public boolean bookRoom(RoomType type) {
-    //}
 }

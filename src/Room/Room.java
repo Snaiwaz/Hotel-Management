@@ -1,29 +1,21 @@
 package Room;
 
 public class Room {
-    private String type;//房间类型
+    private RoomType type;//房间类型
     private double price;//房间价格
     private int capacity;//房间余量
     private boolean isAvailable;//房间状态
 
     //构造函数初始化房间
-    public Room (String type, double price,int capacity) {
+    public Room (RoomType type, double price,int capacity) {
         this.type = type;
         this.price = price;
         this.capacity = capacity;
         this.isAvailable = true;
     }
 
-    public Room(RoomType roomType, double price) {
-        this.type = roomType.toString();
-    }
-
-    public Room() {
-        Room room = new Room();
-    }
-
     //Getters和Setters
-    public String getRoomType() {
+    public RoomType getRoomType() {
         return type;
     }
     public double getPrice() {

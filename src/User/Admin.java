@@ -37,7 +37,7 @@ public class Admin extends User {
                     showCustomer();
                     break;
                 case 2:
-                    System.out.println("功能待实现");
+                    rm.displayRooms();
                     break;
                 case 3:
                     System.out.println("添加房间功能待实现。。。");
@@ -58,7 +58,7 @@ public class Admin extends User {
     //查看顾客入住信息（id，顾客类型，住房类型）
     public void showCustomer () {
         if (customers == null || customers.isEmpty()) {
-           System.out.println("当前没有顾客入住信息");
+           System.out.println("当前没有顾客信息");
            return;
         }
 
@@ -68,10 +68,10 @@ public class Admin extends User {
 
     }
 
-//    //添加房间
-//    public void addRoom () {
-//
-//    }
+    //添加房间（类型还是数量）
+    public void addRoom () {
+    
+    }
 
 //    //删除房间
 //    public void removeRoom () {

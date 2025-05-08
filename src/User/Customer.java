@@ -1,14 +1,26 @@
 package User;
 
+import Room.Room;
+import Room.RoomManagement;
+import Room.RoomType;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+/*
+    1.没有设置初始会员，是否后期考虑加入充值一定数额后非会员转变为会员的功能
+ */
+
 public class Customer extends User {
     private boolean isMember = false;
+    private double balance = 0.0;
+    private Room currentRoom;
     private List<Customer> customers;//存储用户信息的列表
 
     Scanner sc = new Scanner(System.in);
+    
+    RoomManagement rm = new RoomManagement();
 
     // 无参构造方法
     public Customer(List<Customer> customers) {
@@ -29,6 +41,18 @@ public class Customer extends User {
     }
     public List<Customer> getCustomers() {
         return customers;
+    }
+    public Room getCurrentRoom() {
+        return currentRoom;
+    }
+    public void setCurrentRoom(Room room) {
+        this.currentRoom = room;
+    }
+    public double getBalance() {
+        return balance;
+    }
+    public void setBalance(double balance) {
+        this.balance = balance;
     }
 
     //注册
@@ -84,9 +108,10 @@ public class Customer extends User {
 
     //顾客界面
     public void customerMenu(String userId) {
+        
         while (true) {
             System.out.println("=====顾客界面=====");
-            System.out.println("欢迎顾客：" + userId + "\t" + "当前余额：" + "\t" + "享受折扣：");
+            System.out.println("欢迎顾客：" + userId + "\t" + "当前余额：" + balance + "\t" + "享受折扣：" + (isMember ? "会员78折" : "非会员无折扣"));
             System.out.println("1.查看空闲房间");
             System.out.println("2.开房");
             System.out.println("3.退房");
@@ -103,17 +128,48 @@ public class Customer extends User {
                     System.out.println("查看空余房间功能待实现");
 
                     break;
-                case 2:
-                    System.out.println("开房功能待实现");
+                case 2: //开房判断是否会员(其实就是看是否享受折扣)，会员在原价基础进行折扣
+                    System.out.println("请输入想要的房间类型(SINGLE,DOUBLE)：");
+                    String input = sc.next();
+                    try {
+                        RoomType type = RoomType.valueOf(input);
+                        Room bookedRoom = rm.bookRoom(type);
+                        if (bookedRoom != null) {
+                            double originPrice = bookedRoom.getPrice();
+                            double finalPrice = originPrice * this.discount();
+                            //成功扣除相应的金额,失败则充值后再来开房
+                            if (getBalance() >= finalPrice) {
+                                setBalance(getBalance() - finalPrice);
+                                this.setCurrentRoom(bookedRoom);
+                                System.out.println("开房成功！原价: "+ originPrice + "折后价：" + finalPrice);
+                            } else {
+                                System.out.println("余额不足，请充值。");
+                            }
+                            
+                        }else{
+                            System.out.println("该类型房间已满，请选择其他类型。");
+                        }
+                    } catch (IllegalArgumentException e) {
+                        System.out.println("输入的房间类型无效！");
+                    }
                     break;
                 case 3:
-                    System.out.println("退房功能待实现");
+                    if (this.getCurrentRoom() != null) {
+                        if (rm.checkOutRoom(this.getCurrentRoom())) {
+                            System.out.println("退房成功！");
+                            this.setCurrentRoom(null);
+                        } else {
+                            System.out.println("退房失败");
+                        }
+                    } else {
+                        System.out.println("您未入住任何房间。");
+                    }
                     break;
                 case 4:
-                    System.out.println("查看房卡功能待实现");
+                    viewRoomCard();
                     break;
                 case 5:
-                    System.out.println("充值功能待实现");
+                    recharge();
                     break;
                 case 0:
                     System.out.println("返回主界面");
@@ -123,8 +179,34 @@ public class Customer extends User {
             }
         }
     }
-
-
+    
+    //查看房卡
+    public void viewRoomCard() {
+        if (this.getCurrentRoom() != null) {
+            System.out.println("您的房卡信息：" + this.getCurrentRoom());
+        } else {
+            System.out.println("您当前并未入住任何房间。");
+        }
+    }
+    
+    //充值功能 ---> 开房时要有扣除对应房间金额
+    public void recharge() {
+        System.out.println("请输入充值的数额：");
+        double amount = sc.nextDouble();
+        sc.nextLine();
+        if (amount > 0) {
+            this.setBalance(this.getBalance() + amount);
+            System.out.println("充值成功！当前余额：" + this.getBalance());
+        } else {
+            System.out.println("输入的金额无效！");
+        }
+    }
+    
+    //判断是否享受折扣
+    public double discount() {
+        return this.isMember ? 0.78 : 1.0 ; //会员78折，非会员原价；
+    }
+    
     //打印用户信息
     @Override
     public String toString() {
