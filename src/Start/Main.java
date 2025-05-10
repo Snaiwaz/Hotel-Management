@@ -1,6 +1,6 @@
 package Start;
 
-
+import Room.RoomManagement;
 import User.Admin;
 import User.Customer;
 
@@ -17,9 +17,10 @@ public class Main {
     //主界面
     public static void systemMenu() {
         List<Customer> customerList = new ArrayList<>();
-
-        Customer customer = new Customer(customerList);
-        Admin admin = new Admin(customerList);
+        
+        RoomManagement rm = new RoomManagement();
+        Customer customer = new Customer(customerList,rm);
+        Admin admin = new Admin(customerList,rm);
 
         Scanner sc = new Scanner(System.in);
 

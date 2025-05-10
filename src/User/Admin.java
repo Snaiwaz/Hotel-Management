@@ -2,6 +2,7 @@ package User;
 
 import Room.RoomManagement;
 import Room.RoomType;
+import Room.Room;
 
 import java.util.List;
 import java.util.Scanner;
@@ -9,15 +10,14 @@ import java.util.Scanner;
 public class Admin extends User {
     private List<Customer> customers;
     Scanner sc = new Scanner(System.in);
+    private RoomManagement rm;
 
     //预设管理员账号密码构造函数
-    public Admin(List<Customer> customers) {
+    public Admin(List<Customer> customers, RoomManagement rm) {
         super("admin","admin123");
         this.customers = customers;
+        this.rm = rm;
     }
-
-    //实例化room
-    RoomManagement rm = new RoomManagement();
 
     //管理员界面
     public void adminMenu(String userId) {
@@ -84,7 +84,10 @@ public class Admin extends User {
         }
 
         for (Customer customer : customers) {
-            System.out.println("顾客：" + customer.getUserId() + "\t是否会员：" + customer.getMember() + "\t房间类型："  );
+            Room room = customer.getCurrentRoom();
+            String roomInfo = (room!=null) ? "已入住房间类型：" + room.getRoomType() + "，价格：" + room.getPrice() + "，房间状态：" + (room.isAvailable() ? "空闲" : "已占用") :
+                    "未入住";
+            System.out.println("顾客：" + customer.getUserId() + "\t是否会员：" + customer.getMember() + "\t" + roomInfo);
         }
 
     }

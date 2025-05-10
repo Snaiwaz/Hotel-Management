@@ -10,8 +10,8 @@ public class RoomManagement {
     //构造函数
     public RoomManagement() {
         rooms = new ArrayList<>();
-        initializeRooms(RoomType.SINGLE, 100.0, 5);
-        initializeRooms(RoomType.DOUBLE, 150.0, 8);
+        initializeRooms(RoomType.SINGLE, 100.0, 2);
+        initializeRooms(RoomType.DOUBLE, 150.0, 3);
     }
 
     //初始化房间
@@ -26,6 +26,15 @@ public class RoomManagement {
     public void displayRooms() {
         for (Room room : rooms) {
             System.out.println(room);
+        }
+    }
+    
+    //显示空余房间信息(已被预订的则不显示)
+    public void displayAvailableRooms() {
+        for (Room room : rooms) {
+            if (room.isAvailable()) {
+                System.out.println(room);
+            }
         }
     }
 

@@ -4,6 +4,7 @@ import Room.Room;
 import Room.RoomManagement;
 import Room.RoomType;
 
+//import java.util.ArrayList;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -17,14 +18,14 @@ public class Customer extends User {
     private double balance = 0.0;
     private Room currentRoom;
     private List<Customer> customers;//存储用户信息的列表
+    private RoomManagement rm;
 
     Scanner sc = new Scanner(System.in);
-    
-    RoomManagement rm = new RoomManagement();
 
-    // 无参构造方法
-    public Customer(List<Customer> customers) {
+    // 构造方法
+    public Customer(List<Customer> customers, RoomManagement rm) {
         this.customers = customers;
+        this.rm = rm;
     }
 
     public Customer(String userId, String password) {
@@ -62,6 +63,7 @@ public class Customer extends User {
         String userId = sc.nextLine();
         System.out.println("请输入密码：");
         String password = sc.nextLine();
+        
         //检查用户的账号是否存在
         for (Customer customer : customers) {
             if (customer.getUserId().equals(userId)){
@@ -71,7 +73,9 @@ public class Customer extends User {
         }
         //把账号密码对应人保存到动态数组里边。。。
         //如果没有重复就创建成功。。。
-        Customer newCustomer = new Customer(userId,password);
+        Customer newCustomer = new Customer(customers,rm);
+        newCustomer.setUserId(userId);
+        newCustomer.setPassword(password);
         customers.add(newCustomer);
         System.out.println("账户创建成功！");
     }
@@ -83,26 +87,32 @@ public class Customer extends User {
         System.out.println("请输入密码:");
         String password = sc.nextLine();
 
-        Admin admin = new Admin(customers);
+        Admin admin = new Admin(customers,rm);
         //判断是否为管理员
         if (userId.equals("admin") && password.equals("admin123")) {
             System.out.println("正在进入管理员界面...");
-            admin.adminMenu("admin");//调用管理员界面
-        }else{
-            for (Customer customer : customers) {
-                if (customer.getUserId().equals(userId)) {
-                    if (customer.getPassword().equals(password)) {
-                        System.out.println("正在进入顾客界面...");
-                        //进入到顾客界面。。。
-                        customerMenu(customer.getUserId());
-                    } else {
-                        System.out.println("密码错误请重新输入。");
-                        return;
-                    }
-                }else{
-                    System.out.println("用户ID不存在，请重新输入。");
-                }
+            admin.adminMenu("admin"); //调用管理员界面
+            return;
+        }
+        
+        Customer targetCustomer = null;
+        for (Customer customer : customers) {
+            if (customer.getUserId().equals(userId)) {
+                targetCustomer = customer; //先找到目标账号，即是先验证账号
+                break;
             }
+        }
+        
+        if (targetCustomer == null) {
+            System.out.println("用户ID不存在，请重新输入。");
+            return;
+        }
+        //验证密码
+        if (targetCustomer.getPassword().equals(password)) {
+            System.out.println("正在进入顾客界面...");
+            customerMenu(targetCustomer.getUserId());
+        } else {
+            System.out.println("密码错误请重新输入。");
         }
     }
 
@@ -125,7 +135,7 @@ public class Customer extends User {
             sc.nextLine();
             switch (choice) {
                 case 1:
-                    System.out.println("查看空余房间功能待实现");
+                    rm.displayAvailableRooms(); //应该是可以看到所有的房型,然后状态false的不显示
 
                     break;
                 case 2: //开房判断是否会员(其实就是看是否享受折扣)，会员在原价基础进行折扣
@@ -189,12 +199,16 @@ public class Customer extends User {
         }
     }
     
-    //充值功能 ---> 开房时要有扣除对应房间金额
+    //充值功能 ---> 1.开房时要有扣除对应房间金额 2.满足 充值一定金额可以非会员转会员（这里设置10000的门槛）
     public void recharge() {
         System.out.println("请输入充值的数额：");
         double amount = sc.nextDouble();
         sc.nextLine();
         if (amount > 0) {
+            if (amount >= 10000) {
+                this.setMember(true);
+                System.out.println("恭喜您成为本店 至高无上 的永久会员!");
+            }
             this.setBalance(this.getBalance() + amount);
             System.out.println("充值成功！当前余额：" + this.getBalance());
         } else {
