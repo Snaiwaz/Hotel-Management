@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Scanner;
 
 /*
-    1.没有设置初始会员，是否后期考虑加入充值一定数额后非会员转变为会员的功能
+    没有设置初始会员，是否后期考虑加入充值一定数额后非会员转变为会员的功能(已加此功能)
  */
 
 public class Customer extends User {
@@ -73,9 +73,9 @@ public class Customer extends User {
         }
         //把账号密码对应人保存到动态数组里边。。。
         //如果没有重复就创建成功。。。
-        Customer newCustomer = new Customer(customers,rm);
-        newCustomer.setUserId(userId);
-        newCustomer.setPassword(password);
+        Customer newCustomer = new Customer(userId, password);
+        newCustomer.rm = this.rm;
+        newCustomer.customers = this.customers;
         customers.add(newCustomer);
         System.out.println("账户创建成功！");
     }
@@ -110,7 +110,7 @@ public class Customer extends User {
         //验证密码
         if (targetCustomer.getPassword().equals(password)) {
             System.out.println("正在进入顾客界面...");
-            customerMenu(targetCustomer.getUserId());
+            targetCustomer.customerMenu(targetCustomer.getUserId());
         } else {
             System.out.println("密码错误请重新输入。");
         }
@@ -150,7 +150,7 @@ public class Customer extends User {
                             //成功扣除相应的金额,失败则充值后再来开房
                             if (getBalance() >= finalPrice) {
                                 setBalance(getBalance() - finalPrice);
-                                this.setCurrentRoom(bookedRoom);
+                                this.setCurrentRoom(bookedRoom); //更新当前的入住房间
                                 System.out.println("开房成功！原价: "+ originPrice + "折后价：" + finalPrice);
                             } else {
                                 System.out.println("余额不足，请充值。");
